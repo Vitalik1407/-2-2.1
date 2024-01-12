@@ -105,33 +105,15 @@ public class ReservationManager
         throw new Exception(null);
     }
 
-    public void SortRestaurantsByAvaila(DateTime dt)
+    public void SortRestAvail(DateTime date)
     {
         try
         {
-            bool swapped;
-            do
-            {
-                swapped = false;
-                for (int i = 0; i < res.Count - 1; i++)
-                {
-                    int avTc = CountAvailableTables(res[i], dt);
-                    int avTn = CountAvailableTables(res[i + 1], dt);
-
-                    if (avTc < avTn)
-                    {
-                        // Swap restaurants
-                        var temp = res[i];
-                        res[i] = res[i + 1];
-                        res[i + 1] = temp;
-                        swapped = true;
-                    }
-                }
-            } while (swapped);
+            res = res.OrderByDescending(r => CountAvailableTables(r, date)).ToList();
         }
         catch (Exception ex)
         {
-            Console.WriteLine("Error");
+            Console.WriteLine( "Error SortRestAvail");
         }
     }
     public int CountAvailableTables(Restaurant r, DateTime dt)
