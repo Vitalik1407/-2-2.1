@@ -109,30 +109,22 @@ public class ReservationManager
     {
         try
         {
-            res = res.OrderByDescending(r => CountAvailableTables(r, date)).ToList();
+            res = res.OrderByDescending(r => CountAvailTable(r, date)).ToList();
         }
         catch (Exception ex)
         {
-            Console.WriteLine( "Error SortRestAvail");
+            Console.WriteLine("Error SortRestAvail");
         }
     }
-    public int CountAvailableTables(Restaurant r, DateTime dt)
+    public int CountAvailTable(Restaurant restaurant, DateTime date)
     {
         try
         {
-            int count = 0;
-            foreach (var t in r.table)
-            {
-                if (!t.IsBooked(dt))
-                {
-                    count++;
-                }
-            }
-            return count;
+            return restaurant.table.Count(table => !table.IsBooked(date));
         }
         catch (Exception ex)
         {
-            Console.WriteLine("Error");
+            Console.WriteLine( "Error CountAvailTable");
             return 0;
         }
     }
