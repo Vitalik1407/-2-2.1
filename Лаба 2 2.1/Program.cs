@@ -1,43 +1,40 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using static Restaurant;
 
-// Main Application Class
 public class TableReservationApp
 {
     static void Main(string[] args)
     {
-        ReservationManagerClass manage = new ReservationManagerClass();
-        manage.AddRestaurantMethod("A", 10);
-        manage.AddRestaurantMethod("B", 5);
+        ReservationManager manage = new ReservationManager();
+        manage.AddRestaurant("A", 10);
+        manage.AddRestaurant("B", 5);
 
         Console.WriteLine(manage.BookTable("A", new DateTime(2023, 12, 25), 3)); // True
         Console.WriteLine(manage.BookTable("A", new DateTime(2023, 12, 25), 3)); // False
     }
 }
 
-// Reservation Manager Class
-public class ReservationManagerClass
+public class ReservationManager
 {
-    // res
-    public List<RestaurantClass> res;
+    public List<Restaurant> res;
 
-    public ReservationManagerClass()
+    public ReservationManager()
     {
-        res = new List<RestaurantClass>();
+        res = new List<Restaurant>();
     }
 
-    // Add Restaurant Method
-    public void AddRestaurantMethod(string name, int table)
+    public void AddRestaurant(string name, int table)
     {
         try
         {
-            RestaurantClass r = new RestaurantClass();
+            Restaurant r = new Restaurant();
             r.name = name;
-            r.table = new RestaurantTableClass[table];
+            r.table = new RestaurantTable[table];
             for (int i = 0; i < table; i++)
             {
-                r.table[i] = new RestaurantTableClass();
+                r.table[i] = new RestaurantTable();
             }
             res.Add(r);
         }
@@ -47,9 +44,7 @@ public class ReservationManagerClass
         }
     }
 
-    // Load Restaurants From
-    // File
-    private void LoadRestaurantsFromFileMethod(string fileP)
+    private void LoadRestaurantsFromFile(string fileP)
     {
         try
         {
@@ -59,7 +54,7 @@ public class ReservationManagerClass
                 var parts = l.Split(',');
                 if (parts.Length == 2 && int.TryParse(parts[1], out int tableCount))
                 {
-                    AddRestaurantMethod(parts[0], tableCount);
+                    AddRestaurant(parts[0], tableCount);
                 }
                 else
                 {
@@ -73,7 +68,6 @@ public class ReservationManagerClass
         }
     }
 
-    //Find All Free Tables
     public List<string> FindAllFreeTables(DateTime dt)
     {
         try
@@ -106,17 +100,17 @@ public class ReservationManagerClass
             {
                 if (tNumber < 0 || tNumber >= restaurant.table.Length)
                 {
-                    throw new Exception(null); //Invalid table number
+                    throw new Exception(null);
                 }
 
                 return restaurant.table[tNumber].Book(d);
             }
         }
 
-        throw new Exception(null); //Restaurant not found
+        throw new Exception(null);
     }
 
-    public void SortRestaurantsByAvailabilityForUsersMethod(DateTime dt)
+    public void SortRestaurantsByAvaila(DateTime dt)
     {
         try
         {
@@ -126,8 +120,8 @@ public class ReservationManagerClass
                 swapped = false;
                 for (int i = 0; i < res.Count - 1; i++)
                 {
-                    int avTc = CountAvailableTablesForRestaurantClassAndDateTimeMethod(res[i], dt); // available tables current
-                    int avTn = CountAvailableTablesForRestaurantClassAndDateTimeMethod(res[i + 1], dt); // available tables next
+                    int avTc = CountAvailableTables(res[i], dt);
+                    int avTn = CountAvailableTables(res[i + 1], dt);
 
                     if (avTc < avTn)
                     {
@@ -145,9 +139,7 @@ public class ReservationManagerClass
             Console.WriteLine("Error");
         }
     }
-
-    // count available tables in a restaurant
-    public int CountAvailableTablesForRestaurantClassAndDateTimeMethod(RestaurantClass r, DateTime dt)
+    public int CountAvailableTables(Restaurant r, DateTime dt)
     {
         try
         {
@@ -169,47 +161,42 @@ public class ReservationManagerClass
     }
 }
 
-// Restaurant Class
-public class RestaurantClass
+public class Restaurant
 {
-    public string name; //name
-    public RestaurantTableClass[] table; // tables
-}
+    public string name;
+    public RestaurantTable[] table;
 
-// Table Class
-public class RestaurantTableClass
-{
-    private List<DateTime> bd; //booked dates
-
-
-    public RestaurantTableClass()
+    public class RestaurantTable
     {
-        bd = new List<DateTime>();
-    }
+        private List<DateTime> bd;
 
-    // book
-    public bool Book(DateTime d)
-    {
-        try
+
+        public RestaurantTable()
         {
-            if (bd.Contains(d))
+            bd = new List<DateTime>();
+        }
+
+        public bool Book(DateTime d)
+        {
+            try
             {
+                if (bd.Contains(d))
+                {
+                    return false;
+                }
+                bd.Add(d);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error");
                 return false;
             }
-            //add to bd
-            bd.Add(d);
-            return true;
         }
-        catch (Exception ex)
-        {
-            Console.WriteLine("Error");
-            return false;
-        }
-    }
 
-    // is booked
-    public bool IsBooked(DateTime d)
-    {
-        return bd.Contains(d);
+        public bool IsBooked(DateTime d)
+        {
+            return bd.Contains(d);
+        }
     }
 }
