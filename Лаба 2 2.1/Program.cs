@@ -44,27 +44,27 @@ public class ReservationManager
         }
     }
 
-    private void LoadRestaurantsFromFile(string fileP)
+    private void LoadRestaurantsFromFile(string filePath)
     {
         try
         {
-            string[] ls = File.ReadAllLines(fileP);
-            foreach (string l in ls)
+            string[] lines = File.ReadAllLines(filePath);
+            foreach (string line in lines)
             {
-                var parts = l.Split(',');
+                var parts = line.Split(',');
                 if (parts.Length == 2 && int.TryParse(parts[1], out int tableCount))
                 {
                     AddRestaurant(parts[0], tableCount);
                 }
                 else
                 {
-                    Console.WriteLine(l);
+                    Console.WriteLine(line);
                 }
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine("Error");
+            Console.WriteLine ( "Error LoadRestaurantsFromFile");
         }
     }
 
